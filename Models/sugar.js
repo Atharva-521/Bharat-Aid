@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 
 const sugarSchema = new mongoose.Schema({
     fasting:{
-        type: int,
+        type: number,
         required: true
     },
     postmeal:{
-        type: int,
+        type: number,
         required: true
     }
 }
