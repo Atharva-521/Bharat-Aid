@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const inventorySchema = new mongoose.Schema({
     medicineName:{
-        type: int,
+        type: number,
         required: true
     },
     buyDate:{
@@ -10,11 +10,11 @@ const inventorySchema = new mongoose.Schema({
         required: true
     },
     days:{
-        type: int,
+        type: number,
         required: true
     },
     frequency{
-        type:int,
+        type:number,
         required:true
     }
 }
