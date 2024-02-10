@@ -196,6 +196,66 @@ const login = async (req,res) => {
 }
 
 //changePassword
+const forgetPass = async (req, res) => {
+    try {
+        const { email, password, newpassword, confirmPassword } = req.body;
+
+        if (!password || !newpassword) {
+            return res.status(401).json({
+                success: false,
+                message: "All fields are required"
+            });
+        }
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: "User is not registered, please sign up"
+            });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
+            return res.status(403).json({
+                success: false,
+                message: "Incorrect Password"
+            });
+        }
+
+        if (password !== confirmPassword) {
+            return res.status(403).json({
+                success: false,
+                message: "Password and Confirm Password Do Not Match, Try Again"
+            });
+        }
+
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(newpassword, 10);
+
+        const result = await User.findOneAndUpdate(
+            { email },
+            { password: hashedPassword },
+            { new: true }
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Password successfully updated"
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Error occurred while updating the password, please try again"
+        });
+    }
+};
+
+
+
 
 // const result = await User.findOneAndUpdate({email},{
 //     password: hashedPassword
