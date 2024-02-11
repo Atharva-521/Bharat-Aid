@@ -254,9 +254,3 @@ const forgetPass = async (req, res) => {
     }
 };
 
-
-
-
-// const result = await User.findOneAndUpdate({email},{
-//     password: hashedPassword
-// },{new: true})
