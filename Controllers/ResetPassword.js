@@ -1,5 +1,6 @@
 const User = require("../Models/User");
 const sendMail = require("../Utils/sendMail")
+const bcrypt = require("bcrypt");
 
 //Send Reset Password Link
 exports.resetPasswordLink = async (req,res) => {
@@ -53,3 +54,54 @@ exports.resetPasswordLink = async (req,res) => {
 }
 
 //Reset Password
+exports.resetPassword = async(req, res) => {
+    try{
+        const {password, confirmPassword, token} = req.body;
+
+        if(password !== confirmPassword){
+            return res.status(400).json({
+                success: false,
+                message: "Password Does Not Match"
+            })
+        }
+
+        const userDetails = await User.findOne(
+            {token: token}
+        )
+
+        if(!userDetails){
+            return res.status(404).json({
+                success: false,
+                message: "User Not Found"
+            })
+        }
+
+        if(!(userDetails.resetPasswordExpires > Date.now())){
+            return res.status(403).json({
+                success: false,
+                message: "Token Expired, Please Regenerate your token"
+            })
+        }
+
+        const encryptedPassword = await bcrypt.hash(password,10);
+
+        const updatedUser = await User.findOneAndUpdate(
+            {token : token},
+            {
+                password: encryptedPassword
+            },
+            {new: true}
+        )
+
+        return res.status(200).json({
+            success: true,
+            message: "Password Reset Successfully"
+        })
+    }catch(error){
+        return res.json({
+			error: error.message,
+			success: false,
+			message: `Some Error in Updating the Password`,
+		});
+    }
+}
