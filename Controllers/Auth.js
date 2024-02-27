@@ -62,7 +62,7 @@ exports.sendOTP = async (req,res) => {
         })
     }
 }
-//signUp 
+//signUp ToDo : Add Dicebear Api image to profile
 exports.signUp = async(req, res) => {
     try{
         // fetch data from req
@@ -163,6 +163,7 @@ const login = async (req,res) => {
         }
 
         const payload = {
+            id: user._id,
             email,
             exp: Date.now() + 5 * 24 * 60 * 60 * 1000
         }

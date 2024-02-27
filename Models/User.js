@@ -25,10 +25,6 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref:'profile'
     },
-    image:{
-        type: String,
-        required: true
-    },
     medication:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'inventory'
@@ -43,7 +39,10 @@ const userSchema = new mongoose.Schema({
     },
     relativeEmail:{
         type: String  //TODO : To add in profile or to keep in user only
-    }
+    },
+    image:{
+        type: String,
+    },
 })
 
 module.exports = mongoose.model("user",userSchema);
