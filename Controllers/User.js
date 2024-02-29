@@ -1,5 +1,6 @@
 const User = require("../Models/User");
 const profile = require("../Models/profile");
+const uploadeToCloudinary = require("../Utils/uploadToCloudinary");
 
 
 
@@ -52,7 +53,7 @@ exports.updateProfile = async(req, res) => {
         const {age = "", bloodGroup = "", gender = "", exercise = "", height = "", weight = ""} = req.body;
         const userId = req.user.id;
 
-        const userDetails = await User.findById(id);
+        const userDetails = await User.findById(userId);
         const profile = await profile.findById(userDetails.additionalData);
 
         profile.age = age;
@@ -124,8 +125,32 @@ exports.updateProfilePicture = async(req, res) => {
                 message:"please upload an image"
             })
         }
-    }catch(error){
 
+        const userDetails = await User.findById(userId);
+
+        if(!userDetails){
+            return res.status(404).json({
+                success: false,
+                message: "User Not Found"
+            })
+        }
+
+        const uploadDetails = await uploadeToCloudinary(img, process.env.FOLDER);
+
+        userDetails.image = uploadDetails.secure_url;
+
+        await userDetails.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Profile Image Uploaded Succeessfully",
+            userDetails
+        })
+
+    }catch(error){
+        return res.status(500).json({
+            success: false,
+            message: "Error Occured While Uploading Profile Details"
+        })
     }
 }
-//Delete Account

@@ -1,12 +1,13 @@
 const mongoose = require("mongoose");
 
 const bloodPressureSchema = new mongoose.Schema({
-    systolic:{
+    //TO-Do : Add Fields that wil take data for only 30 days and then reset 
+    systolic:[{
         type: Number
-    },
-    diastolic:{
+    }],
+    diastolic:[{
         type: Number
-    }
+    }]
 })
 
 module.exports = mongoose.model("bloodPressure",bloodPressureSchema);

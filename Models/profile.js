@@ -23,6 +23,7 @@ const profileSchema = new mongoose.Schema({
     weight:{
         type: String,
     },
+    
    
 })
 

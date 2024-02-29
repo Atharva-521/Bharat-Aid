@@ -13,10 +13,10 @@ const inventorySchema = new mongoose.Schema({
         type: number,
         required: true
     },
-    frequency{
+    frequency:{
         type:number,
         required:true
     }
 }
 )
-    module.exports = mongoose.model("inventory",inventorySchema);
+module.exports = mongoose.model("inventory",inventorySchema);

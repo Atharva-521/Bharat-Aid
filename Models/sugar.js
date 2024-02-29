@@ -1,14 +1,15 @@
 const mongoose = require("mongoose");
 
 const sugarSchema = new mongoose.Schema({
-    fasting:{
+    //TO-Do : Add Fields that wil take data for only 30 days and then reset 
+    fasting:[{
         type: number,
         required: true
-    },
-    postmeal:{
+    }],
+    postmeal:[{
         type: number,
         required: true
-    }
+    }]
 }
 )
     module.exports = mongoose.model("sugar",sugarSchema);

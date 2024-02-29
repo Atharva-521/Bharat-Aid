@@ -3,7 +3,10 @@ const OTP = require("../Models/OTP");
 const Profile = require("../Models/profile")
 const otpGenerator = require('otp-generator');
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const bloodPressure = require("../Models/bloodPressure");
+const sugar = require("../Models/sugar")
+const diseases = require("../Models/diseases")
 require("dotenv").config()
 
 
@@ -101,22 +104,30 @@ exports.signUp = async(req, res) => {
         // hash
         const hashedPassword = await bcrypt.hash(password,10);
         //create entry in db
+        const disease = await diseases.create({});
         const profile = await Profile.create({
             age: null,
             bloodGroup: null,
             gender: null,
-            disease: null,
+            disease: disease._id,
             exercise: null,
             height: null,
             weight: null
+            
         })
+
+        const bloodPressureDetails = await bloodPressure.create({});
+        const sugarDetails = await sugar.create({});
+        
         const result = await User.create({
             firstName,
             lastName,
             email,
             phoneNumber,
             password: hashedPassword,
-            additionalData: profile._id
+            additionalData: profile._id,
+            bloodPressure: bloodPressureDetails._id,
+            sugar: sugarDetails._id
         })
 
         return res.status(200).json({

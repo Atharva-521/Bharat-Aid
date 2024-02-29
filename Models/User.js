@@ -25,10 +25,10 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref:'profile'
     },
-    medication:{
+    medication:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'inventory'
-    },
+    }],
     bloodPressure:{
         type: mongoose.Schema.Types.ObjectId,
         ref:'bloodPressure'

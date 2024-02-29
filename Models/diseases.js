@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 
 const diseaseSchema = new mongoose.Schema({
-    diseaseName:{
+    diseaseName:[{
         type: String,
         required: true
-    }
+    }]
 }
 )
     module.exports = mongoose.model("disease",diseaseSchema);
