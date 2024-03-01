@@ -88,6 +88,30 @@ exports.deleteInventory = async(req, res) => {
 //To-Do : Controller to delete all the Inventory
 
 
+
+// Define the route for deleting all inventory items
+router.delete('/inventory', inventoryController.deleteAllInventoryItems);
+
+
+exports.deleteAllInventoryItems = async (req, res) => {
+    try {
+        // Delete all items in the inventory
+        await Inventory.deleteMany({});
+
+        return res.json({
+            success: true,
+            message: "All inventory items deleted successfully"
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+};
+
+
 //To-Do : Controller To Update The Inventory
 
 
