@@ -130,6 +130,7 @@ exports.deleteInventoryItem = async (req, res) => {
     }
 };
 
+
 // Define the route for deleting all inventory items
 router.delete('/inventory', inventoryController.deleteAllInventoryItems);
 
