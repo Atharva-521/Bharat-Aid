@@ -173,3 +173,8 @@ exports.updateSugar = async(req, res) => {
 }
 
 //To-Do : Add Cron Operation to sugar that will automatically clear the data from 30 days array in sugar model
+
+
+
+
+//To-Do : create controller that returns systolic and disatolic arrays and then fetch them in ml model and use it
