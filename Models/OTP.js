@@ -22,6 +22,7 @@ async function sendverificationMail(email,otp){
     try{
         const info = await sendMail(email,"Verification Mail For Sign In To Bharat Aid ",otp)
         console.log("Email Sent Successfully");
+        return
     }catch(error){
         console.log("Failed To Send Email ",error);
     }
@@ -30,6 +31,7 @@ async function sendverificationMail(email,otp){
 
 otpSchema.pre('save',function(next){
     sendverificationMail(this.email,this.otp)
+    next();
 });
 
 module.exports = mongoose.model("otp",otpSchema);
