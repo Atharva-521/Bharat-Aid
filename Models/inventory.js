@@ -1,22 +1,22 @@
 const mongoose = require("mongoose");
 
 const inventorySchema = new mongoose.Schema({
-    medicineName:{
-        type: number,
+    medicineName: {
+        type: String, // Changed to String type
         required: true
     },
-    buyDate:{
+    buyDate: {
         type: Date,
         required: true
     },
-    days:{
-        type: number,
+    days: {
+        type: Number,
         required: true
     },
-    frequency:{
-        type:number,
-        required:true
+    frequency: {
+        type: Number,
+        required: true
     }
-}
-)
-module.exports = mongoose.model("inventory",inventorySchema);
+});
+
+module.exports = mongoose.model("inventories", inventorySchema); // Changed model name to "inventory"

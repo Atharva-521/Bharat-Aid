@@ -34,4 +34,4 @@ otpSchema.pre('save',function(next){
     next();
 });
 
-module.exports = mongoose.model("otp",otpSchema);
+module.exports = mongoose.model("otps",otpSchema);

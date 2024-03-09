@@ -1,6 +1,7 @@
 const User = require("../Models/User");
 const OTP = require("../Models/OTP");
 const Profile = require("../Models/profile")
+const Inventory = require("../Models/inventory")
 const otpGenerator = require('otp-generator');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -72,6 +73,7 @@ exports.signUp = async(req, res) => {
         const {firstName,lastName,email,phoneNumber,password,confirmPassword,otp} = req.body;
         //validate data
         if(!firstName || !lastName || !email || !phoneNumber || !password || !confirmPassword || !otp){
+            console.log(otp)
             return res.status(401).json({
                 success: false,
                 message: "All fields are required"

@@ -10,6 +10,8 @@ const {
 
 const {auth} = require('../Middlewares/auth')
 
+//auth
+
 router.post('/sendotp',sendOTP);
 router.post('/signup',signUp);
 router.post('/login',login);

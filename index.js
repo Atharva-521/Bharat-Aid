@@ -4,19 +4,31 @@ const connectCloudinary = require('./Config/cloudinary');
 const cookieParser = require('cookie-parser');
 const fileUploader = require('express-fileupload');
 const userRoutes = require('./Routes/User')
+const profileRoutes = require('./Routes/Profile');
+const cors = require("cors");
 require('dotenv').config();
 const app = express();
 
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(fileUploader());
+app.use(
+	cors({
+		origin:"http://localhost:3000",
+		credentials:true,
+	})
+)
+app.use(fileUploader({
+    useTempFiles : true,
+    tempFileDir : '/tmp/'
+}));
 
 
 connectdb();
 connectCloudinary()
 
 app.use('/api/v1/auth',userRoutes);
+app.use('/api/v1/profile',profileRoutes);
 
 const PORT = process.env.PORT || 4000
 

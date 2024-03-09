@@ -12,4 +12,4 @@ const sugarSchema = new mongoose.Schema({
     }]
 }
 )
-    module.exports = mongoose.model("sugar",sugarSchema);
+    module.exports = mongoose.model("sugars",sugarSchema);
