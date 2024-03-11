@@ -1,6 +1,7 @@
 const User = require("../Models/User");
 const OTP = require("../Models/OTP");
 const Profile = require("../Models/profile")
+const Inventory = require("../Models/inventory")
 const otpGenerator = require('otp-generator');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -8,7 +9,6 @@ const bloodPressure = require("../Models/bloodPressure");
 const sugar = require("../Models/sugar")
 const diseases = require("../Models/diseases")
 require("dotenv").config()
-
 
 //OTP Creation/generation
 exports.sendOTP = async (req,res) => {
@@ -51,6 +51,7 @@ exports.sendOTP = async (req,res) => {
             otp
         }
         const response = await OTP.create(payload);
+        console.log(response);
         //send a response
         return res.status(200).json({
             success: true,
@@ -72,6 +73,7 @@ exports.signUp = async(req, res) => {
         const {firstName,lastName,email,phoneNumber,password,confirmPassword,otp} = req.body;
         //validate data
         if(!firstName || !lastName || !email || !phoneNumber || !password || !confirmPassword || !otp){
+            console.log(otp)
             return res.status(401).json({
                 success: false,
                 message: "All fields are required"
@@ -87,8 +89,11 @@ exports.signUp = async(req, res) => {
         }
         //otp match
         const recentOTP = await OTP.find({email}).sort({createdAt: -1}).limit(1);
+            console.log("recent OTP : ",recentOTP[0].otp);
+            console.log("Otp : ",otp);
+            console.log("Match?", recentOTP[0].otp !== otp)
 
-        if(recentOTP !== otp){
+        if(recentOTP[0].otp !== otp){
             return res.status(403).json({
                 success: false,
                 message: "OTP Doesn't Match, Try Again"
@@ -143,7 +148,7 @@ exports.signUp = async(req, res) => {
     }
 }
 //Login
-const login = async (req,res) => {
+exports.login = async (req,res) => {
     try{
         //fetch data - email and password
         const {email,password} = req.body;
@@ -208,7 +213,7 @@ const login = async (req,res) => {
 }
 
 //changePassword
-const forgetPass = async (req, res) => {
+exports.changePassword = async (req, res) => {
     try {
         const { email, password, newpassword, confirmPassword } = req.body;
 
@@ -237,7 +242,7 @@ const forgetPass = async (req, res) => {
             });
         }
 
-        if (password !== confirmPassword) {
+        if (newpassword !== confirmPassword) {
             return res.status(403).json({
                 success: false,
                 message: "Password and Confirm Password Do Not Match, Try Again"

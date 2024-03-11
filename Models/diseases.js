@@ -7,4 +7,4 @@ const diseaseSchema = new mongoose.Schema({
     }]
 }
 )
-    module.exports = mongoose.model("disease",diseaseSchema);
+    module.exports = mongoose.model("diseases",diseaseSchema);
