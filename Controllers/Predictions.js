@@ -157,7 +157,7 @@ exports.deleteAllInventoryItems = async (req, res) => {
 //To-Do : Controller To Update The Inventory
 
 
-
+//To-Do : Add Cron Operation to bloodpressure that will automatically clear the data from 30 days array in bloodpressure model
 exports.updateBloodPressure = async(req, res) => {
     try{
         const {systolic, diastolic} = req.body;
@@ -197,7 +197,7 @@ exports.updateBloodPressure = async(req, res) => {
 }
 
 
-//To-Do : Add Cron Operation to bloodpressure that will automatically clear the data from 30 days array in bloodpressure model
+//To-Do : Add Cron Operation to sugar that will automatically clear the data from 30 days array in sugar model
 
 
 exports.updateSugar = async(req, res) => {
@@ -238,7 +238,7 @@ exports.updateSugar = async(req, res) => {
     }
 }
 
-//To-Do : Add Cron Operation to sugar that will automatically clear the data from 30 days array in sugar model
+
 
 
 
