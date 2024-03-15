@@ -88,6 +88,48 @@ exports.deleteInventory = async(req, res) => {
 //To-Do : Controller to delete all the Inventory
 
 
+//Program to delete inventory items by item id
+
+router.delete('/inventory/:itemId', inventoryController.deleteInventoryItem);
+
+exports.deleteInventoryItem = async (req, res) => {
+    try {
+        const itemId = req.params.itemId; // Assuming itemId is part of the route parameters
+
+        // Check if itemId is provided
+        if (!itemId) {
+            return res.json({
+                success: false,
+                message: "Provide Item ID for deletion"
+            });
+        }
+
+        // Check if the item exists
+        const existingItem = await Inventory.findById(itemId);
+
+        if (!existingItem) {
+            return res.json({
+                success: false,
+                message: "Inventory item not found"
+            });
+        }
+
+        // Delete the item
+        await Inventory.findByIdAndDelete(itemId);
+
+        return res.json({
+            success: true,
+            message: "Inventory item deleted successfully"
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+};
+
 
 // Define the route for deleting all inventory items
 router.delete('/inventory', inventoryController.deleteAllInventoryItems);
@@ -115,7 +157,7 @@ exports.deleteAllInventoryItems = async (req, res) => {
 //To-Do : Controller To Update The Inventory
 
 
-
+//To-Do : Add Cron Operation to bloodpressure that will automatically clear the data from 30 days array in bloodpressure model
 exports.updateBloodPressure = async(req, res) => {
     try{
         const {systolic, diastolic} = req.body;
@@ -155,7 +197,7 @@ exports.updateBloodPressure = async(req, res) => {
 }
 
 
-//To-Do : Add Cron Operation to bloodpressure that will automatically clear the data from 30 days array in bloodpressure model
+//To-Do : Add Cron Operation to sugar that will automatically clear the data from 30 days array in sugar model
 
 
 exports.updateSugar = async(req, res) => {
@@ -196,7 +238,7 @@ exports.updateSugar = async(req, res) => {
     }
 }
 
-//To-Do : Add Cron Operation to sugar that will automatically clear the data from 30 days array in sugar model
+
 
 
 
