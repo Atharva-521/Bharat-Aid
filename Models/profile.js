@@ -12,7 +12,7 @@ const profileSchema = new mongoose.Schema({
     },
     disease:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'disease'  //ToDo : should we add this as object or normal array after this update updateProfile controller in user.js
+        ref: 'diseases'  //ToDo : should we add this as object or normal array after this update updateProfile controller in user.js
     },
     exercise:{
         type: String
@@ -27,4 +27,4 @@ const profileSchema = new mongoose.Schema({
    
 })
 
-module.exports = mongoose.model("profile",profileSchema);
+module.exports = mongoose.model("profiles",profileSchema);

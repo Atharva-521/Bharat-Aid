@@ -23,19 +23,19 @@ const userSchema = new mongoose.Schema({
     },
     additionalData:{
         type: mongoose.Schema.Types.ObjectId,
-        ref:'profile'
+        ref:'profiles'
     },
     medication:[{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'inventory'
+        ref: 'inventories'
     }],
     bloodPressure:{
         type: mongoose.Schema.Types.ObjectId,
-        ref:'bloodPressure'
+        ref:'bloodPressures'
     },
     sugar:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'sugar'
+        ref: 'sugars'
     },
     relativeEmail:{
         type: String  //TODO : To add in profile or to keep in user only
@@ -45,4 +45,4 @@ const userSchema = new mongoose.Schema({
     },
 })
 
-module.exports = mongoose.model("user",userSchema);
+module.exports = mongoose.model("users",userSchema);

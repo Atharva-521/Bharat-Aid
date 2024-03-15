@@ -1,13 +1,14 @@
 const User = require("../Models/User");
-const profile = require("../Models/profile");
-const uploadeToCloudinary = require("../Utils/uploadToCloudinary");
+const Profile = require("../Models/profile");
+const Inventory = require("../Models/inventory")
+const {uploadToCloudinary} = require("../Utils/uploadToCloudinary");
 
 
 
 exports.getUserDetails = async(req, res) => {
     try{
         const userId = req.user.id;
-
+        console.log("User Id : ", userId);
         if(!userId){
             return res.status(404).json({
                 success: false,
@@ -16,10 +17,10 @@ exports.getUserDetails = async(req, res) => {
         }
 
         const userDetails = await User.findById(
-            {_id: userId}
+            userId
         )
         .populate({
-            path: "profile",
+            path: "additionalData",
             populate: {
                 path: "disease"
             }
@@ -35,7 +36,7 @@ exports.getUserDetails = async(req, res) => {
                 message: "User Not Found"
             })
         }
-
+        console.log("User Details : ", userDetails)
         return res.status(200).json({
             success: true,
             data: userDetails
@@ -53,8 +54,10 @@ exports.updateProfile = async(req, res) => {
         const {age = "", bloodGroup = "", gender = "", exercise = "", height = "", weight = ""} = req.body;
         const userId = req.user.id;
 
-        const userDetails = await User.findById(userId);
-        const profile = await profile.findById(userDetails.additionalData);
+        const userDetails = await User.findById(userId).populate("additionalData");
+        console.log(userDetails.additionalData._id)
+        const profile = await Profile.findById(userDetails.additionalData._id);
+        console.log("Profile : ", profile)
 
         profile.age = age;
         profile.bloodGroup = bloodGroup;
@@ -118,6 +121,7 @@ exports.updateProfilePicture = async(req, res) => {
     try{
         const userId = req.user.id;
         const img = req.files.image;
+        console.log(img)
 
         if(!img){
             return res.status(403).json({
@@ -127,6 +131,7 @@ exports.updateProfilePicture = async(req, res) => {
         }
 
         const userDetails = await User.findById(userId);
+        
 
         if(!userDetails){
             return res.status(404).json({
@@ -135,7 +140,8 @@ exports.updateProfilePicture = async(req, res) => {
             })
         }
 
-        const uploadDetails = await uploadeToCloudinary(img, process.env.FOLDER);
+        const uploadDetails = await uploadToCloudinary(img, process.env.FOLDER);
+        console.log(uploadDetails)
 
         userDetails.image = uploadDetails.secure_url;
 
