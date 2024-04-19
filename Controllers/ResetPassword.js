@@ -28,10 +28,12 @@ exports.resetPasswordLink = async (req,res) => {
         //add token to user db
         const update = await User.findOneAndUpdate({email},{
             token: token,
-            resetPasswordExpires: Date.now() + 5*60*1000,
+            resetPasswordExpires: Date.now() + 5*60*60*1000,
         },{new: true})
+        console.log(Date.now());
         //create an url
         const url = `http://localhost:3000/resetpassword/${token}`
+        console.log(url);
         //send mail
         const result = await sendMail(email,'Your Password Reset Link',url);
         if(!result){

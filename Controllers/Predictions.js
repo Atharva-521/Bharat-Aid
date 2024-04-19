@@ -1,6 +1,8 @@
 const bloodPressure = require("../Models/bloodPressure");
+const sugar = require('../Models/sugar');
 const inventory = require("../Models/inventory");
 const User = require("../Models/User");
+
 
 exports.addInventory = async(req, res) => {
     try{
@@ -50,9 +52,7 @@ exports.addInventory = async(req, res) => {
 
 exports.deleteInventory = async(req, res) => {
     try{
-        const {inventoryId} = req.body;
         const userId = req.user.id;
-
         if(!inventoryId){
             return res.status(403).json({
                 success: false,
@@ -85,18 +85,10 @@ exports.deleteInventory = async(req, res) => {
 };
 
 
-//To-Do : Controller to delete all the Inventory
-
-
-
-// Define the route for deleting all inventory items
-router.delete('/inventory', inventoryController.deleteAllInventoryItems);
-
-
 exports.deleteAllInventoryItems = async (req, res) => {
     try {
         // Delete all items in the inventory
-        await Inventory.deleteMany({});
+        await inventory.deleteMany({});
 
         return res.json({
             success: true,
@@ -116,7 +108,7 @@ exports.deleteAllInventoryItems = async (req, res) => {
 
 
 
-exports.updateBloodPressure = async(req, res) => {
+exports.addBloodPressure = async(req, res) => {
     try{
         const {systolic, diastolic} = req.body;
         const userId = req.user.id;
@@ -158,7 +150,7 @@ exports.updateBloodPressure = async(req, res) => {
 //To-Do : Add Cron Operation to bloodpressure that will automatically clear the data from 30 days array in bloodpressure model
 
 
-exports.updateSugar = async(req, res) => {
+exports.addSugar = async(req, res) => {
     try{
         const {fasting, postmeal} = req.body;
         const userId = req.user.id;
@@ -192,6 +184,158 @@ exports.updateSugar = async(req, res) => {
         return res.status(500).json({
             success: false,
             message: "Failed To Add Sugar Level"
+        })
+    }
+}
+
+
+exports.getBPPredction = async(req, res) => {
+    const user = req.user.id;
+    try{
+        // Get the users details from the database
+        const userDetails = await User.findById(user)
+        .select('bloodPressure')
+        .populate('bloodPressure')
+        .exec();
+
+        console.log(userDetails);
+
+        const systolic = userDetails.bloodPressure.systolic.toString();
+        const diastolic = userDetails.bloodPressure.diastolic.toString();
+        const days = userDetails.bloodPressure.systolic.map((item, index) => index + 1 ).toString();
+        console.log("Systolic : ",systolic);
+        console.log("Diastolic : ",diastolic);
+        console.log("Days: ",days);
+
+        const data = await fetch(`http://localhost:5000/get-prediction?date=${days}&systolic=${systolic}&diastolic=${diastolic}`);
+        const response = await data.json();
+        console.log(response);
+
+        if(!response){
+            return res.status(403).json({
+                success: false,
+                message: "Failed to Connect to API"
+            })
+        }
+
+        //calculate avg
+        let s_sum = userDetails.bloodPressure.systolic.reduce((acc, val) => acc + val, 0);
+        let s_avg = s_sum / userDetails.bloodPressure.systolic.length;
+
+        let d_sum = userDetails.bloodPressure.diastolic.reduce((acc, val) => acc + val, 0);
+        let d_avg = d_sum / userDetails.bloodPressure.diastolic.length;
+
+        let systolic_pred = response.systolic_predictions;
+        let disatolic_pred = response.diastolic_predictions;
+        let bp = response.blood_pressure;
+
+        let s_low = false;
+        let s_elevated = false;
+        let s_high = false;
+        let s_high2 = false;
+
+        let d_low = false;
+        let d_elevated = false;
+        let d_high = false;
+        let d_high2 = false;
+
+        let s_status = -1; //normal
+        let d_status = -1; //normal
+
+        //Low - sys : <90  || dis : <60
+        //Elevated - sys : >120 and < 129 || dis : >80
+        //High - sys : >=130 and < 139 || dis : >80  && <=89
+        //High stage 2 -  sys : >=140 or dis : >=90
+
+        systolic_pred.forEach(element => {
+            if(element < 90){
+                s_low = true;
+            }else if(element > 120 && element <= 129){
+                s_elevated = true;
+            }else if(element > 130 && element <= 139){
+                s_high = true;
+            }else if(element >= 140){
+                s_high2 = true;
+            }
+        });
+
+        disatolic_pred.forEach(element => {
+            if(element <= 60){
+                d_low = true;
+            }else if(element > 80 && element <= 84){
+                d_elevated = true;
+            }else if(element > 85 && element <= 89){
+                d_high = true;
+            }else if(element >= 90){
+                d_high2 = true;
+            }
+        });
+
+        
+        if(s_low){
+            s_status = 0; //low
+        }else if(s_elevated){
+            s_status = 1; //elevated
+        }else if(s_high){
+            s_status = 2; //high
+        }else if(s_high2){
+            s_status = 3; //high2
+        }
+
+        
+        if(d_low){
+            d_status = 0; //low
+        }else if(d_elevated){
+            d_status = 1; //elevated
+        }else if(d_high){
+            d_status = 2; //high
+        }else if(d_high2){
+            d_status = 3; //high2
+        }
+
+
+        return res.status(200).json({
+            success: true,
+            s_status,
+            d_status,
+            s_avg,
+            d_avg,
+            message: "Predictions"
+        })
+
+
+    }catch(error){
+        return res.status(500).json({
+            sucess: false,
+            message: error.message
+        })
+    }
+}
+
+exports.getLevels = async(req, res) => {
+    try{
+        const userId = req.user.id;
+
+        const userDetails = await User.findById(userId);
+        console.log(userDetails.bloodPressure);
+
+
+        const userBP = await bloodPressure.findById(userDetails.bloodPressure);
+        console.log(userBP);
+
+        const userSugar = await sugar.findById(userDetails.sugar);
+        console.log(userSugar);
+
+        return res.status(200).json({
+            success: true,
+            BP : userBP,
+            sugar : userSugar
+        })
+
+    }catch(error){
+        res.status(500).json({
+        success:false,
+        message: error.message        
         })
     }
 }

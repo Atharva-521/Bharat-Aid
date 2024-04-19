@@ -49,9 +49,55 @@ exports.getUserDetails = async(req, res) => {
     }
 }
 
+exports.updateUserDetails = async(req, res) => {
+    try{
+        const {Name, phoneNumber, email} = req.body;
+
+        
+            const firstName = Name.split(' ')[0];
+            const lastName = Name.split(' ')[1];
+        
+        
+        const userId = req.user.id;
+
+        if(!userId){
+            return res.status(403).json({
+                success: false,
+                message: 'User not logged in! Please login to continue.'
+            })
+        }
+
+        const updatedProfile = await User.findByIdAndUpdate(userId, {
+            firstName: firstName,
+            lastName: lastName,
+            phoneNumber: phoneNumber,
+            email: email
+        }, {new: true})
+
+        console.log(updatedProfile);
+
+        if(!updatedProfile){
+            return res.status(403).json({
+                success: false,
+                message: 'error occured while updating user details'
+            })
+        }
+
+        return res.status(200).json({
+            success: true,
+            updatedProfile
+        })
+    }catch(error){
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        })
+    }
+}
+
 exports.updateProfile = async(req, res) => {
     try{
-        const {age = "", bloodGroup = "", gender = "", exercise = "", height = "", weight = ""} = req.body;
+        const {age , bloodGroup , gender , exercise , height , weight} = req.body;
         const userId = req.user.id;
 
         const userDetails = await User.findById(userId).populate("additionalData");
@@ -59,12 +105,12 @@ exports.updateProfile = async(req, res) => {
         const profile = await Profile.findById(userDetails.additionalData._id);
         console.log("Profile : ", profile)
 
-        profile.age = age;
-        profile.bloodGroup = bloodGroup;
-        profile.gender = gender;
-        profile.exercise = exercise;
-        profile.height = height;
-        profile.weight = weight;
+        age != "" ? profile.age = age : profile.age = "";
+        bloodGroup != "" ? profile.bloodGroup = bloodGroup : profile.bloodGroup = "";
+        gender != "" ? profile.gender = gender : profile.gender = "";
+        exercise != "" ? profile.exercise = exercise : profile.exercise = "";
+        height != "" ? profile.height = height : profile.height = "";
+        weight != "" ? profile.weight = weight : profile.weight = "";
 
         await profile.save();
 
